@@ -6,7 +6,7 @@ const isDevelopment = import.meta.env.DEV;
 const API_BASE_URL = isDevelopment 
   ? '/api'  // Proxy endpoint in development
   : (import.meta.env.VITE_API_BASE_URL || 'http://192.168.125.203:5000');
-const UPLOAD_ENDPOINT = import.meta.env.VITE_UPLOAD_ENDPOINT || '/email_send_import/upload';
+const UPLOAD_ENDPOINT = import.meta.env.VITE_UPLOAD_ENDPOINT || '/email/email_send_import/upload';
 
 export interface UploadResponse {
   data: {
