@@ -216,7 +216,7 @@ const EmailAutomationSummary = () => {
       <div className="w-full max-w-7xl flex items-center justify-between mb-8">
         <h1 className="text-3xl font-bold text-primary tracking-tight">Email Automation Summary</h1>
         <div className="flex items-center gap-3">
-          <label className="text-sm font-semibold text-blue-900">Company:</label>
+          <label className="text-sm font-semibold text-blue-900">Email Campaign:</label>
           <Select value={companyFilter} onValueChange={setCompanyFilter}>
             <SelectTrigger className="w-32 border-blue-300 focus:ring-blue-500 focus:border-blue-500 font-medium">
               <SelectValue />
@@ -288,10 +288,13 @@ const EmailAutomationSummary = () => {
                       <label className="text-sm font-semibold text-blue-900">Start Date:</label>
                       <Input
                         type="date"
-                        className="w-40 border-blue-300 focus-visible:ring-blue-500 focus-visible:border-blue-500 rounded-md text-sm font-medium cursor-pointer"
+                        className="w-32 border-blue-300 focus-visible:ring-blue-500 focus-visible:border-blue-500 rounded-md text-sm font-medium cursor-pointer text-center"
                         value={startDate}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                           setStartDate(e.target.value);
+                        }}
+                        onClick={(e: React.MouseEvent<HTMLInputElement>) => {
+                          (e.target as HTMLInputElement).showPicker?.();
                         }}
                         max={new Date().toISOString().slice(0, 10)}
                       />
@@ -300,10 +303,13 @@ const EmailAutomationSummary = () => {
                       <label className="text-sm font-semibold text-blue-900">End Date:</label>
                       <Input
                         type="date"
-                        className="w-40 border-blue-300 focus-visible:ring-blue-500 focus-visible:border-blue-500 rounded-md text-sm font-medium cursor-pointer"
+                        className="w-32 border-blue-300 focus-visible:ring-blue-500 focus-visible:border-blue-500 rounded-md text-sm font-medium cursor-pointer text-center"
                         value={endDate}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                           setEndDate(e.target.value);
+                        }}
+                        onClick={(e: React.MouseEvent<HTMLInputElement>) => {
+                          (e.target as HTMLInputElement).showPicker?.();
                         }}
                         max={new Date().toISOString().slice(0, 10)}
                       />
@@ -448,10 +454,13 @@ const EmailAutomationSummary = () => {
                       <label className="text-sm font-semibold text-blue-900">Start Date:</label>
                       <Input
                         type="date"
-                        className="w-40 border-blue-300 focus-visible:ring-blue-500 focus-visible:border-blue-500 rounded-md text-sm font-medium cursor-pointer"
+                        className="w-32 border-blue-300 focus-visible:ring-blue-500 focus-visible:border-blue-500 rounded-md text-sm font-medium cursor-pointer text-center"
                         value={respondsStartDate}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                           setRespondsStartDate(e.target.value);
+                        }}
+                        onClick={(e: React.MouseEvent<HTMLInputElement>) => {
+                          (e.target as HTMLInputElement).showPicker?.();
                         }}
                         max={new Date().toISOString().slice(0, 10)}
                       />
@@ -460,10 +469,13 @@ const EmailAutomationSummary = () => {
                       <label className="text-sm font-semibold text-blue-900">End Date:</label>
                       <Input
                         type="date"
-                        className="w-40 border-blue-300 focus-visible:ring-blue-500 focus-visible:border-blue-500 rounded-md text-sm font-medium cursor-pointer"
+                        className="w-32 border-blue-300 focus-visible:ring-blue-500 focus-visible:border-blue-500 rounded-md text-sm font-medium cursor-pointer text-center"
                         value={respondsEndDate}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                           setRespondsEndDate(e.target.value);
+                        }}
+                        onClick={(e: React.MouseEvent<HTMLInputElement>) => {
+                          (e.target as HTMLInputElement).showPicker?.();
                         }}
                         max={new Date().toISOString().slice(0, 10)}
                       />
