@@ -2,7 +2,10 @@
 
 // Use proxy in development to avoid CORS issues
 // The proxy is configured in vite.config.ts
-const API_BASE_URL = '/api';
+// In production, use the full backend URL
+const API_BASE_URL = import.meta.env.PROD 
+  ? 'https://tfshrms.cloud/email'
+  : '/api';
 const UPLOAD_ENDPOINT = '/email_send_import/upload';
 
 export interface UploadResponse {
