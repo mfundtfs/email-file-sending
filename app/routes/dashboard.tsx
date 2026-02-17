@@ -61,18 +61,18 @@ const EmailAutomationSummary = () => {
   
   // Pagination for Responds tab
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState<number | "All">(20);
+  const [pageSize, setPageSize] = useState<number | "All">(50);
   const [totalPages, setTotalPages] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
   
   // Pagination for Sent Emails tab
   const [sentPage, setSentPage] = useState(1);
-  const [sentPageSize, setSentPageSize] = useState<number | "All">(20);
+  const [sentPageSize, setSentPageSize] = useState<number | "All">(50);
   const [sentTotalPages, setSentTotalPages] = useState(1);
   const [sentTotalRecords, setSentTotalRecords] = useState(0);
   
   const [hoveredBody, setHoveredBody] = useState<{ content: string; x: number; y: number } | null>(null);
-  const [companyFilter, setCompanyFilter] = useState('GOLY');
+  const [companyFilter, setCompanyFilter] = useState('MPLY');
   
   // Date range filter for Responds Emails tab
   const [respondsStartDate, setRespondsStartDate] = useState(() => {
