@@ -6,21 +6,19 @@ import tsconfigPaths from "vite-tsconfig-paths";
 export default defineConfig(({ mode }) => {
   // Load environment variables
   const env = loadEnv(mode, process.cwd(), '');
-  const apiBaseUrl = env.VITE_API_BASE_URL || 'https://tfshrms.cloud/email/';
+  const backendUrl = env.VITE_BACKEND_URL || 'https://tfshrms.cloud/email';
 
   return {
     plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
     server: {
       proxy: {
         '/api': {
-          target: apiBaseUrl,
+          target: backendUrl,
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, ''),
           secure: false,
         },
       },
-      // Middleware to handle Chrome DevTools requests
-      middlewareMode: false,
     },
     preview: {
       port: 5173,

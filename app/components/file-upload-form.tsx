@@ -2,6 +2,13 @@
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "./ui/select";
 import { showToast } from "../lib/toast";
 import { uploadFile, type UploadResponse, type UploadError } from "../lib/api";
 
@@ -16,6 +23,7 @@ export function FileUploadForm() {
   const [uploadProgress, setUploadProgress] = React.useState<number | null>(null);
   const [error, setError] = React.useState("");
   const [fileError, setFileError] = React.useState("");
+  const [companyType, setCompanyType] = React.useState("GOLY");
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0] || null;
@@ -51,17 +59,25 @@ export function FileUploadForm() {
     setUploadProgress(0);
 
     try {
-      const response: UploadResponse = await uploadFile(file, (progress) => {
+      const response: UploadResponse = await uploadFile(file, companyType, (progress) => {
         setUploadProgress(progress);
       });
 
       // Handle successful response
       if (response.status === 200) {
         const { data } = response;
-        showToast(
-          `${response.message}! Inserted: ${data.inserted}, Skipped: ${data.skipped}, Total: ${data.total_rows_in_file}`,
-          "success"
-        );
+        const successMessage = [
+          response.message,
+          `Email Type: ${data.email_type}`,
+          `Total Records: ${data.total_rows_in_file}`,
+          `Inserted: ${data.inserted}`,
+          `Updated: ${data.updated}`,
+          `Skipped: ${data.skipped}`,
+          `Duplicates (No Change): ${data.duplicates_no_change}`,
+          `Unsubscribed Overrides: ${data.unsubscribed_overrides}`
+        ].join(' | ');
+        
+        showToast(successMessage, "success");
         
         // Reset form
         setFile(null);
@@ -95,6 +111,21 @@ export function FileUploadForm() {
         style={{ boxShadow: '0 8px 32px 0 rgba(60, 60, 90, 0.10)' }}
       >
         <h2 className="text-3xl font-bold text-center text-blue-700 tracking-tight">Upload Excel File</h2>
+        
+        {/* Company Type Dropdown */}
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="company-type" className="text-base text-blue-700 font-semibold">Company Type <span className="text-red-500">*</span></Label>
+          <Select value={companyType} onValueChange={setCompanyType}>
+            <SelectTrigger className="w-full border-2 border-slate-300 rounded-lg px-4 py-3 text-left hover:border-blue-400 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all bg-white shadow-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent position="popper" side="bottom" align="start" sideOffset={4}>
+              <SelectItem value="GOLY">GOLY</SelectItem>
+              <SelectItem value="MPLY">MPLY</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        
         <div className="flex flex-col gap-2">
           <Label htmlFor="custom-file-upload" className="text-base text-blue-700 font-semibold">Excel File <span className="text-red-500">*</span></Label>
           <div

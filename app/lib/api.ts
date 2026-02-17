@@ -1,12 +1,9 @@
 // API Service for file upload
 
-// In development, use proxy to avoid CORS issues
-// In production, use the actual API URL from environment variables
-const isDevelopment = import.meta.env.DEV;
-const API_BASE_URL = isDevelopment 
-  ? '/api'  // Proxy endpoint in development
-  : (import.meta.env.VITE_API_BASE_URL || 'http://192.168.125.203:5000');
-const UPLOAD_ENDPOINT = import.meta.env.VITE_UPLOAD_ENDPOINT || '/email/email_send_import/upload';
+// Use proxy in development to avoid CORS issues
+// The proxy is configured in vite.config.ts
+const API_BASE_URL = '/api';
+const UPLOAD_ENDPOINT = '/email_send_import/upload';
 
 export interface UploadResponse {
   data: {
@@ -14,6 +11,9 @@ export interface UploadResponse {
     skipped: number;
     total_rows_in_file: number;
     unsubscribed_overrides: number;
+    duplicates_no_change: number;
+    updated: number;
+    email_type: string;
   };
   message: string;
   status: number;
@@ -27,15 +27,18 @@ export interface UploadError {
 /**
  * Upload Excel file to the server
  * @param file - The Excel file to upload
+ * @param emailType - The email type (GOLY or MPLY)
  * @param onProgress - Optional callback for upload progress
  * @returns Promise with upload response
  */
 export async function uploadFile(
   file: File,
+  emailType: string,
   onProgress?: (progress: number) => void
 ): Promise<UploadResponse> {
   const formData = new FormData();
   formData.append('file', file);
+  formData.append('email_type', emailType);
 
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
@@ -109,3 +112,143 @@ export async function uploadFile(
     xhr.send(formData);
   });
 }
+
+// Email Dashboard API Types
+export interface SentEmailRecord {
+  email_type: string;
+  receiver_email: string;
+  sender_email: string;
+  sent_at: string;
+  status: string;
+  status_message: string;
+  subject: string | null;
+}
+
+export interface RespondsEmailRecord {
+  body: string | null;
+  email_type: string;
+  receiver_email: string;
+  responds: string;
+  sender_email: string;
+  subject: string | null;
+  updated_at: string;
+}
+
+export type EmailRecord = SentEmailRecord | RespondsEmailRecord;
+
+export interface PaginationInfo {
+  page: number;
+  per_page: number;
+  total_pages: number;
+  total_records: number;
+}
+
+export interface FiltersApplied {
+  date: string | null;
+  date_from: string;
+  date_to: string;
+  email_type: string;
+}
+
+export interface MonthlyStats {
+  monthly_not_responds: number;
+  monthly_positive_responds: number;
+  monthly_sent: number;
+  monthly_unsubscribed: number;
+}
+
+export interface EmailReportResponse {
+  status: number;
+  message: string;
+  data: {
+    type: string;
+    records: (SentEmailRecord | RespondsEmailRecord)[];
+    pagination: PaginationInfo;
+    filters_applied: FiltersApplied;
+    monthly_stats: MonthlyStats;
+  };
+}
+
+export interface EmailReportRequest {
+  type: 'sent' | 'responds';
+  email_type: string;
+  date_from: string;
+  date_to: string;
+  page: number;
+  per_page: number;
+}
+
+// Email Dashboard API Service
+export const emailApi = {
+  async getReport(request: EmailReportRequest): Promise<EmailReportResponse> {
+    const endpoint = `${API_BASE_URL}/email_send_import/report`;
+    console.log('Fetching from:', endpoint);
+    console.log('Request payload:', request);
+    
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(request),
+      });
+
+      console.log('Response status:', response.status);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('API Error Response:', errorText);
+        throw new Error(`API Error: ${response.status} ${response.statusText} - ${errorText}`);
+      }
+
+      const data = await response.json();
+      console.log('Response data:', data);
+      return data;
+    } catch (error) {
+      console.error('Fetch error:', error);
+      throw error;
+    }
+  },
+};
+
+// Unsubscribe API Types
+export interface UnsubscribeResponse {
+  data: {
+    is_subscribed: number;
+    k: string;
+    receiver_email: string;
+    sender_email: string;
+  };
+  message: string;
+  status: number;
+}
+
+export interface UnsubscribeRequest {
+  k: string;
+  to: string;
+  from: string;
+}
+
+/**
+ * Unsubscribe from email notifications
+ */
+export const unsubscribeEmail = async (
+  payload: UnsubscribeRequest
+): Promise<UnsubscribeResponse> => {
+  const response = await fetch(`${API_BASE_URL}/email_tracking/unsub`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to unsubscribe: ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  return data;
+};
+
