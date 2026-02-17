@@ -46,7 +46,7 @@ export default function App() {
   return (
     <>
       <Outlet />
-      <Toaster />
+      <Toaster position="bottom-right" />
     </>
   );
 }
