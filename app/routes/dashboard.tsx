@@ -281,39 +281,45 @@ const EmailAutomationSummary = () => {
             {/* Date Range Filter */}
             <Card className="mb-6 border-blue-200 bg-gradient-to-r from-blue-50 to-white shadow-md">
               <CardContent className="pt-6">
-                <div className="flex flex-col md:flex-row items-center gap-4">
-                  <h3 className="text-base font-bold text-blue-900 whitespace-nowrap">Sent At Date Range Filter:</h3>
-                  <div className="flex flex-col sm:flex-row items-center gap-4">
-                    <div className="flex items-center gap-3 bg-white px-4 py-2.5 rounded-lg border border-blue-200 shadow-sm">
-                      <label className="text-sm font-semibold text-blue-900">Start Date:</label>
-                      <Input
-                        type="date"
-                        className="w-32 border-blue-300 focus-visible:ring-blue-500 focus-visible:border-blue-500 rounded-md text-sm font-medium cursor-pointer text-center"
-                        value={startDate}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                          setStartDate(e.target.value);
-                        }}
-                        onClick={(e: React.MouseEvent<HTMLInputElement>) => {
-                          (e.target as HTMLInputElement).showPicker?.();
-                        }}
-                        max={new Date().toISOString().slice(0, 10)}
-                      />
+                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                  <div className="flex flex-col md:flex-row items-center gap-4">
+                    <h3 className="text-base font-bold text-blue-900 whitespace-nowrap">Sent At Date Range Filter:</h3>
+                    <div className="flex flex-col sm:flex-row items-center gap-4">
+                      <div className="flex items-center gap-3 bg-white px-4 py-2.5 rounded-lg border border-blue-200 shadow-sm">
+                        <label className="text-sm font-semibold text-blue-900">Start Date:</label>
+                        <Input
+                          type="date"
+                          className="w-32 border-blue-300 focus-visible:ring-blue-500 focus-visible:border-blue-500 rounded-md text-sm font-medium cursor-pointer text-center"
+                          value={startDate}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                            setStartDate(e.target.value);
+                          }}
+                          onClick={(e: React.MouseEvent<HTMLInputElement>) => {
+                            (e.target as HTMLInputElement).showPicker?.();
+                          }}
+                          max={new Date().toISOString().slice(0, 10)}
+                        />
+                      </div>
+                      <div className="flex items-center gap-3 bg-white px-4 py-2.5 rounded-lg border border-blue-200 shadow-sm">
+                        <label className="text-sm font-semibold text-blue-900">End Date:</label>
+                        <Input
+                          type="date"
+                          className="w-32 border-blue-300 focus-visible:ring-blue-500 focus-visible:border-blue-500 rounded-md text-sm font-medium cursor-pointer text-center"
+                          value={endDate}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                            setEndDate(e.target.value);
+                          }}
+                          onClick={(e: React.MouseEvent<HTMLInputElement>) => {
+                            (e.target as HTMLInputElement).showPicker?.();
+                          }}
+                          max={new Date().toISOString().slice(0, 10)}
+                        />
+                      </div>
                     </div>
-                    <div className="flex items-center gap-3 bg-white px-4 py-2.5 rounded-lg border border-blue-200 shadow-sm">
-                      <label className="text-sm font-semibold text-blue-900">End Date:</label>
-                      <Input
-                        type="date"
-                        className="w-32 border-blue-300 focus-visible:ring-blue-500 focus-visible:border-blue-500 rounded-md text-sm font-medium cursor-pointer text-center"
-                        value={endDate}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                          setEndDate(e.target.value);
-                        }}
-                        onClick={(e: React.MouseEvent<HTMLInputElement>) => {
-                          (e.target as HTMLInputElement).showPicker?.();
-                        }}
-                        max={new Date().toISOString().slice(0, 10)}
-                      />
-                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 bg-blue-600 px-4 py-2.5 rounded-lg shadow-sm">
+                    <span className="text-sm font-bold text-white">Total Records:</span>
+                    <span className="text-lg font-extrabold text-white">{sentTotalRecords.toLocaleString()}</span>
                   </div>
                 </div>
               </CardContent>
@@ -447,39 +453,45 @@ const EmailAutomationSummary = () => {
             {/* Filters */}
             <Card className="mb-6 border-blue-200 bg-gradient-to-r from-blue-50 to-white shadow-md">
               <CardContent className="pt-6">
-                <div className="flex flex-col md:flex-row items-center gap-4">
-                  <h3 className="text-base font-bold text-blue-900 whitespace-nowrap">Email Responds Date Range Filter:</h3>
-                  <div className="flex flex-col sm:flex-row items-center gap-4">
-                    <div className="flex items-center gap-3 bg-white px-4 py-2.5 rounded-lg border border-blue-200 shadow-sm">
-                      <label className="text-sm font-semibold text-blue-900">Start Date:</label>
-                      <Input
-                        type="date"
-                        className="w-32 border-blue-300 focus-visible:ring-blue-500 focus-visible:border-blue-500 rounded-md text-sm font-medium cursor-pointer text-center"
-                        value={respondsStartDate}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                          setRespondsStartDate(e.target.value);
-                        }}
-                        onClick={(e: React.MouseEvent<HTMLInputElement>) => {
-                          (e.target as HTMLInputElement).showPicker?.();
-                        }}
-                        max={new Date().toISOString().slice(0, 10)}
-                      />
+                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                  <div className="flex flex-col md:flex-row items-center gap-4">
+                    <h3 className="text-base font-bold text-blue-900 whitespace-nowrap">Email Responds Date Range Filter:</h3>
+                    <div className="flex flex-col sm:flex-row items-center gap-4">
+                      <div className="flex items-center gap-3 bg-white px-4 py-2.5 rounded-lg border border-blue-200 shadow-sm">
+                        <label className="text-sm font-semibold text-blue-900">Start Date:</label>
+                        <Input
+                          type="date"
+                          className="w-32 border-blue-300 focus-visible:ring-blue-500 focus-visible:border-blue-500 rounded-md text-sm font-medium cursor-pointer text-center"
+                          value={respondsStartDate}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                            setRespondsStartDate(e.target.value);
+                          }}
+                          onClick={(e: React.MouseEvent<HTMLInputElement>) => {
+                            (e.target as HTMLInputElement).showPicker?.();
+                          }}
+                          max={new Date().toISOString().slice(0, 10)}
+                        />
+                      </div>
+                      <div className="flex items-center gap-3 bg-white px-4 py-2.5 rounded-lg border border-blue-200 shadow-sm">
+                        <label className="text-sm font-semibold text-blue-900">End Date:</label>
+                        <Input
+                          type="date"
+                          className="w-32 border-blue-300 focus-visible:ring-blue-500 focus-visible:border-blue-500 rounded-md text-sm font-medium cursor-pointer text-center"
+                          value={respondsEndDate}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                            setRespondsEndDate(e.target.value);
+                          }}
+                          onClick={(e: React.MouseEvent<HTMLInputElement>) => {
+                            (e.target as HTMLInputElement).showPicker?.();
+                          }}
+                          max={new Date().toISOString().slice(0, 10)}
+                        />
+                      </div>
                     </div>
-                    <div className="flex items-center gap-3 bg-white px-4 py-2.5 rounded-lg border border-blue-200 shadow-sm">
-                      <label className="text-sm font-semibold text-blue-900">End Date:</label>
-                      <Input
-                        type="date"
-                        className="w-32 border-blue-300 focus-visible:ring-blue-500 focus-visible:border-blue-500 rounded-md text-sm font-medium cursor-pointer text-center"
-                        value={respondsEndDate}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                          setRespondsEndDate(e.target.value);
-                        }}
-                        onClick={(e: React.MouseEvent<HTMLInputElement>) => {
-                          (e.target as HTMLInputElement).showPicker?.();
-                        }}
-                        max={new Date().toISOString().slice(0, 10)}
-                      />
-                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 bg-blue-600 px-4 py-2.5 rounded-lg shadow-sm">
+                    <span className="text-sm font-bold text-white">Total Records:</span>
+                    <span className="text-lg font-extrabold text-white">{totalRecords.toLocaleString()}</span>
                   </div>
                 </div>
               </CardContent>
