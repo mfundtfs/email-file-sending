@@ -31,18 +31,18 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "../components/ui/tabs"
 import { emailApi, type SentEmailRecord, type RespondsEmailRecord, type MonthlyStats } from "../lib/api";
 
 const respondsFields = [
-  "Sender Email",
-  "Receiver Email",
-  "Responds",
-  "Responds Subject",
-  "Responds Body",
-  "Responds Date",
+  "Sender",
+  "Recipient",
+  "Response",
+  "Response Subject",
+  "Response Body",
+  "Response Date",
 ];
 
 const sentFields = [
-  "Sender Mail",
-  "Receiver Email",
-  "Sent At",
+  "Sender",
+  "Recipient",
+  "Sent On",
 ];
 
 const PAGE_SIZES = [10, 20, 50, 100, 500, "All"] as const;
@@ -177,7 +177,7 @@ const EmailAutomationSummary = () => {
       const ampm = hours >= 12 ? 'PM' : 'AM';
       hours = hours % 12 || 12;
       
-      return `${dayName}, ${day} ${month} ${year} ${hours}:${minutes} ${ampm} IST`;
+      return `${month} ${day}, ${year}@${hours}:${minutes} ${ampm} IST`;
     }
     
     // Fallback: return original string with IST
@@ -223,7 +223,7 @@ const EmailAutomationSummary = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-start bg-white px-4 py-8">
       <div className="w-full max-w-7xl flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold text-primary tracking-tight">Email Automation Summary</h1>
+        <h1 className="text-3xl font-bold text-primary tracking-tight">Email Sending Summary</h1>
         <div className="flex items-center gap-3">
           <label className="text-sm font-semibold text-blue-900">Email Campaign:</label>
           <Select value={companyFilter} onValueChange={setCompanyFilter}>
@@ -281,8 +281,8 @@ const EmailAutomationSummary = () => {
       <div className="w-full max-w-7xl">
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
           <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-6">
-            <TabsTrigger value="sent" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">Sent Emails Data</TabsTrigger>
-            <TabsTrigger value="responds" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">Responds Emails Data</TabsTrigger>
+            <TabsTrigger value="sent" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">Email Send Data</TabsTrigger>
+            <TabsTrigger value="responds" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">Email Response Data</TabsTrigger>
           </TabsList>
 
           {/* Sent Emails Data Tab */}
@@ -583,8 +583,8 @@ const EmailAutomationSummary = () => {
                         }
                       >
                         {row.map((cell, j) => {
-                          // If this is the 'Responds Body' column, truncate and show tooltip on hover
-                          if (respondsFields[j] === "Responds Body") {
+                          // If this is the 'Response Body' column, truncate and show tooltip on hover
+                          if (respondsFields[j] === "Response Body") {
                             return (
                               <TableCell
                                 key={j}
@@ -600,7 +600,7 @@ const EmailAutomationSummary = () => {
                                   </span>
                                   <span
                                     className="flex-shrink-0 text-blue-600 hover:text-blue-900 focus:outline-none cursor-pointer relative"
-                                    aria-label="View full responds body"
+                                    aria-label="View full response body"
                                     onMouseEnter={e => {
                                       const rect = (e.target as HTMLElement).getBoundingClientRect();
                                       setHoveredBody({ content: cell, x: rect.left + rect.width / 2, y: rect.bottom });
