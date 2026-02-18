@@ -242,7 +242,7 @@ const EmailAutomationSummary = () => {
       <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <Card className="border-blue-300 hover:shadow-lg transition-shadow">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-blue-900">Monthly Sent Email</CardTitle>
+            <CardTitle className="text-sm font-medium text-blue-900">Monthly Emails Sent</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold text-blue-600">{stats.monthly_sent}</p>
@@ -251,7 +251,7 @@ const EmailAutomationSummary = () => {
         
         <Card className="border-blue-300 hover:shadow-lg transition-shadow">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-blue-900">Monthly Unsubscribe Email</CardTitle>
+            <CardTitle className="text-sm font-medium text-blue-900">Monthly Unsubscribed Emails</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold text-red-600">{stats.monthly_unsubscribed}</p>
