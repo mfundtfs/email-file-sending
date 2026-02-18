@@ -519,7 +519,7 @@ const EmailAutomationSummary = () => {
                   
                   {/* Responds Type Filter */}
                   <div className="flex items-center gap-3 bg-white px-4 py-2.5 rounded-lg border border-blue-200 shadow-sm">
-                    <label className="text-sm font-semibold text-blue-900">Responds:</label>
+                    <label className="text-sm font-semibold text-blue-900">Response:</label>
                     <Select value={respondsFilter} onValueChange={(value) => {
                       setRespondsFilter(value as typeof respondsFilter);
                       setPage(1); // Reset to first page when filter changes
