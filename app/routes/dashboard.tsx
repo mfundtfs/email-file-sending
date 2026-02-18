@@ -73,6 +73,7 @@ const EmailAutomationSummary = () => {
   
   const [hoveredBody, setHoveredBody] = useState<{ content: string; x: number; y: number } | null>(null);
   const [companyFilter, setCompanyFilter] = useState('MPLY');
+  const [respondsFilter, setRespondsFilter] = useState<'All' | 'Positive Responds' | 'Not Responds Yet' | 'Unsubscribe'>('All');
   
   // Date range filter for Responds Emails tab
   const [respondsStartDate, setRespondsStartDate] = useState(() => {
@@ -183,8 +184,16 @@ const EmailAutomationSummary = () => {
     return dateStr.replace(/ GMT.*$/, '') + ' IST';
   };
 
-  // Convert API records to table rows for Responds tab
-  const respondsTableData = respondsData.map(record => [
+  // Convert API records to table rows for Responds tab with filtering
+  const filteredRespondsData = respondsData.filter(record => {
+    if (respondsFilter === 'All') return true;
+    if (respondsFilter === 'Positive Responds') return record.responds === 'Positive Responds';
+    if (respondsFilter === 'Not Responds Yet') return record.responds === 'Not Responds Yet';
+    if (respondsFilter === 'Unsubscribe') return record.responds === 'Unsubscribe';
+    return true;
+  });
+  
+  const respondsTableData = filteredRespondsData.map(record => [
     record.sender_email,
     record.receiver_email,
     record.responds,
@@ -333,7 +342,7 @@ const EmailAutomationSummary = () => {
             )}
 
             {/* Sent Emails Table */}
-            {!loading && (
+            {!loading && sentTableData.length > 0 && (
               <div className="rounded-2xl shadow-xl overflow-hidden border-2 border-blue-400 animate-fade-in">
                 <Table className="bg-white text-base">
                   <TableHeader>
@@ -380,9 +389,26 @@ const EmailAutomationSummary = () => {
                 </Table>
               </div>
             )}
+            
+            {/* No Data State for Sent Emails */}
+            {!loading && sentTableData.length === 0 && (
+              <div className="rounded-2xl shadow-xl overflow-hidden border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-white p-16 animate-fade-in">
+                <div className="flex flex-col items-center justify-center text-center">
+                  <div className="w-24 h-24 mb-6 rounded-full bg-blue-100 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                    </svg>
+                  </div>
+                  <h3 className="text-2xl font-bold text-blue-900 mb-2">No Data Available</h3>
+                  <p className="text-blue-600 text-base max-w-md">
+                    There are no sent email records for the selected date range and email campaign. Try adjusting your filters.
+                  </p>
+                </div>
+              </div>
+            )}
 
             {/* Pagination */}
-            {!loading && (
+            {!loading && sentTableData.length > 0 && (
               <div className="flex flex-col md:flex-row items-center justify-between gap-4 mt-8">
                 <div className="flex items-center gap-2 order-1 md:order-0">
                   <span className="text-sm text-muted-foreground">Rows per page:</span>
@@ -454,8 +480,9 @@ const EmailAutomationSummary = () => {
             <Card className="mb-6 border-blue-200 bg-gradient-to-r from-blue-50 to-white shadow-md">
               <CardContent className="pt-6">
                 <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                  {/* Date Range Filter */}
                   <div className="flex flex-col md:flex-row items-center gap-4">
-                    <h3 className="text-base font-bold text-blue-900 whitespace-nowrap">Email Responds Date Range Filter:</h3>
+                    <h3 className="text-base font-bold text-blue-900 whitespace-nowrap">Email Responds Filter:</h3>
                     <div className="flex flex-col sm:flex-row items-center gap-4">
                       <div className="flex items-center gap-3 bg-white px-4 py-2.5 rounded-lg border border-blue-200 shadow-sm">
                         <label className="text-sm font-semibold text-blue-900">Start Date:</label>
@@ -489,6 +516,27 @@ const EmailAutomationSummary = () => {
                       </div>
                     </div>
                   </div>
+                  
+                  {/* Responds Type Filter */}
+                  <div className="flex items-center gap-3 bg-white px-4 py-2.5 rounded-lg border border-blue-200 shadow-sm">
+                    <label className="text-sm font-semibold text-blue-900">Responds:</label>
+                    <Select value={respondsFilter} onValueChange={(value) => {
+                      setRespondsFilter(value as typeof respondsFilter);
+                      setPage(1); // Reset to first page when filter changes
+                    }}>
+                      <SelectTrigger className="w-44 border-blue-300 focus:ring-blue-500 focus:border-blue-500 font-medium">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent position="popper" side="bottom" align="start" sideOffset={4}>
+                        <SelectItem value="All">All</SelectItem>
+                        <SelectItem value="Positive Responds">Positive Responds</SelectItem>
+                        <SelectItem value="Not Responds Yet">Not Responds Yet</SelectItem>
+                        <SelectItem value="Unsubscribe">Unsubscribe</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  {/* Total Records */}
                   <div className="flex items-center gap-2 bg-blue-600 px-4 py-2.5 rounded-lg shadow-sm">
                     <span className="text-sm font-bold text-white">Total Records:</span>
                     <span className="text-lg font-extrabold text-white">{totalRecords.toLocaleString()}</span>
@@ -505,7 +553,7 @@ const EmailAutomationSummary = () => {
             )}
 
             {/* Responds Table */}
-            {!loading && (
+            {!loading && respondsTableData.length > 0 && (
               <div className="rounded-2xl shadow-xl overflow-hidden border-2 border-blue-400 animate-fade-in">
                 <Table className="bg-white text-base">
                   <TableHeader>
@@ -592,9 +640,26 @@ const EmailAutomationSummary = () => {
                 </Table>
               </div>
             )}
+            
+            {/* No Data State for Responds Emails */}
+            {!loading && respondsTableData.length === 0 && (
+              <div className="rounded-2xl shadow-xl overflow-hidden border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-white p-16 animate-fade-in">
+                <div className="flex flex-col items-center justify-center text-center">
+                  <div className="w-24 h-24 mb-6 rounded-full bg-blue-100 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-2xl font-bold text-blue-900 mb-2">No Data Available</h3>
+                  <p className="text-blue-600 text-base max-w-md">
+                    There are no email response records for the selected date range and email campaign. Try adjusting your filters.
+                  </p>
+                </div>
+              </div>
+            )}
 
             {/* Pagination */}
-            {!loading && (
+            {!loading && respondsTableData.length > 0 && (
               <div className="flex flex-col md:flex-row items-center justify-between gap-4 mt-8">
                 <div className="flex items-center gap-2 order-1 md:order-0">
                   <span className="text-sm text-muted-foreground">Rows per page:</span>
