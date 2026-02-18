@@ -177,7 +177,7 @@ const EmailAutomationSummary = () => {
       const ampm = hours >= 12 ? 'PM' : 'AM';
       hours = hours % 12 || 12;
       
-      return `${month} ${day}, ${year}@${hours}:${minutes} ${ampm} IST`;
+      return `${month} ${day}, ${year} @ ${hours}:${minutes} ${ampm} IST`;
     }
     
     // Fallback: return original string with IST
@@ -260,7 +260,7 @@ const EmailAutomationSummary = () => {
         
         <Card className="border-blue-300 hover:shadow-lg transition-shadow">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-blue-900">Monthly Positive Responds</CardTitle>
+            <CardTitle className="text-sm font-medium text-blue-900">Monthly Positive Responses</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold text-green-600">{stats.monthly_positive_responds}</p>
@@ -269,7 +269,7 @@ const EmailAutomationSummary = () => {
         
         <Card className="border-blue-300 hover:shadow-lg transition-shadow">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-blue-900">Monthly Not Responds</CardTitle>
+            <CardTitle className="text-sm font-medium text-blue-900">Monthly Not Responded</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold text-orange-600">{stats.monthly_not_responds}</p>
