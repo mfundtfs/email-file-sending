@@ -151,6 +151,7 @@ export interface FiltersApplied {
   date_from: string;
   date_to: string;
   email_type: string;
+  responds_filter?: string;
 }
 
 export interface MonthlyStats {
@@ -179,6 +180,19 @@ export interface EmailReportRequest {
   date_to: string;
   page: number;
   per_page: number;
+  responds_filter?: string;
+}
+
+export interface ResponseOption {
+  label: string;
+}
+
+export interface RespondsOptionsResponse {
+  data: {
+    options: ResponseOption[];
+  };
+  message: string;
+  status: number;
 }
 
 // Email Dashboard API Service
@@ -207,6 +221,35 @@ export const emailApi = {
 
       const data = await response.json();
       console.log('Response data:', data);
+      return data;
+    } catch (error) {
+      console.error('Fetch error:', error);
+      throw error;
+    }
+  },
+
+  async getRespondsOptions(): Promise<RespondsOptionsResponse> {
+    const endpoint = `${API_BASE_URL}/email_send_import/responds-options`;
+    console.log('Fetching response options from:', endpoint);
+    
+    try {
+      const response = await fetch(endpoint, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      console.log('Response status:', response.status);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('API Error Response:', errorText);
+        throw new Error(`API Error: ${response.status} ${response.statusText} - ${errorText}`);
+      }
+
+      const data = await response.json();
+      console.log('Response options data:', data);
       return data;
     } catch (error) {
       console.error('Fetch error:', error);

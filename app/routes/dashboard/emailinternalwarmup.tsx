@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Input } from "../components/ui/input";
+import { Input } from "../../components/ui/input";
 import { FaRegEye } from "react-icons/fa";
 import { toast } from "sonner";
 import {
@@ -9,7 +9,7 @@ import {
   TableRow,
   TableHead,
   TableCell,
-} from "../components/ui/table";
+} from "../../components/ui/table";
 import {
   Pagination,
   PaginationContent,
@@ -18,17 +18,17 @@ import {
   PaginationPrevious,
   PaginationNext,
   PaginationEllipsis,
-} from "../components/ui/pagination";
+} from "../../components/ui/pagination";
 import {
   Select,
   SelectTrigger,
   SelectContent,
   SelectItem,
   SelectValue,
-} from "../components/ui/select";
-import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "../components/ui/tabs";
-import { emailApi, type SentEmailRecord, type RespondsEmailRecord, type MonthlyStats, type ResponseOption } from "../lib/api";
+} from "../../components/ui/select";
+import { Card, CardHeader, CardTitle, CardContent } from "../../components/ui/card";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "../../components/ui/tabs";
+import { emailApi, type ResponseOption } from "../../lib/api";
 
 const respondsFields = [
   "Sender",
@@ -47,10 +47,10 @@ const sentFields = [
 
 const PAGE_SIZES = [10, 20, 50, 100, 500, "All"] as const;
 
-const EmailAutomationSummary = () => {
-  const [sentData, setSentData] = useState<SentEmailRecord[]>([]);
-  const [respondsData, setRespondsData] = useState<RespondsEmailRecord[]>([]);
-  const [stats, setStats] = useState<MonthlyStats>({
+const EmailInternalWarmup = () => {
+  const [sentData, setSentData] = useState<any[]>([]);
+  const [respondsData, setRespondsData] = useState<any[]>([]);
+  const [stats, setStats] = useState({
     monthly_sent: 0,
     monthly_unsubscribed: 0,
     monthly_positive_responds: 0,
@@ -73,7 +73,7 @@ const EmailAutomationSummary = () => {
   
   const [hoveredBody, setHoveredBody] = useState<{ content: string; x: number; y: number } | null>(null);
   const [companyFilter, setCompanyFilter] = useState('MPLY');
-  const [respondsFilter, setRespondsFilter] = useState<string>('');
+  const [respondsFilter, setRespondsFilter] = useState<string>('All');
   const [responseOptions, setResponseOptions] = useState<ResponseOption[]>([]);
   
   // Date range filter for Responds Emails tab
@@ -113,81 +113,6 @@ const EmailAutomationSummary = () => {
     fetchResponseOptions();
   }, []);
 
-  // Fetch data from API based on active tab
-  useEffect(() => {
-    let isMounted = true;
-    
-    const fetchData = async () => {
-      setLoading(true);
-      toast.dismiss(); // Dismiss any existing toasts
-      
-      try {
-        const currentPage = activeTab === 'sent' ? sentPage : page;
-        const currentPageSize = activeTab === 'sent' ? sentPageSize : pageSize;
-        const dateFrom = activeTab === 'sent' ? startDate : respondsStartDate;
-        const dateTo = activeTab === 'sent' ? endDate : respondsEndDate;
-        
-        // When "All" is selected, send a large number
-        const perPageValue = currentPageSize === "All" ? 100000 : currentPageSize;
-        
-        const requestPayload: any = {
-          type: activeTab,
-          email_type: companyFilter,
-          date_from: dateFrom,
-          date_to: dateTo,
-          page: currentPage,
-          per_page: perPageValue,
-        };
-        
-        // Add responds_filter for responds tab when not "All" or empty
-        if (activeTab === 'responds' && respondsFilter && respondsFilter !== 'All') {
-          requestPayload.responds_filter = respondsFilter;
-        }
-        
-        const response = await emailApi.getReport(requestPayload);
-        
-        if (!isMounted) return; // Prevent state update if component unmounted
-        
-        // Update stats from API response (same for both tabs)
-        setStats(response.data.monthly_stats);
-        
-        // Update data based on tab
-        if (activeTab === 'sent') {
-          setSentData(response.data.records as SentEmailRecord[]);
-          setSentTotalPages(response.data.pagination.total_pages);
-          setSentTotalRecords(response.data.pagination.total_records);
-        } else {
-          setRespondsData(response.data.records as RespondsEmailRecord[]);
-          setTotalPages(response.data.pagination.total_pages);
-          setTotalRecords(response.data.pagination.total_records);
-        }
-        
-        // Show success toast
-        if (response.data.records.length > 0) {
-          toast.success(`Successfully loaded ${response.data.records.length} records`);
-        } else {
-          toast.info('No records found for the selected filters');
-        }
-      } catch (err) {
-        if (!isMounted) return; // Prevent toast if component unmounted
-        
-        // Show error toast
-        console.error('Error fetching emails:', err);
-        toast.error('Unable to load email data. Please check your connection and try again.');
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchData();
-    
-    return () => {
-      isMounted = false;
-    };
-  }, [activeTab, companyFilter, startDate, endDate, respondsStartDate, respondsEndDate, sentPage, sentPageSize, page, pageSize, respondsFilter]);
-
   // Helper function to format date/time string without timezone conversion
   const formatDateTime = (dateStr: string) => {
     // Parse the date string directly without timezone conversion
@@ -209,29 +134,22 @@ const EmailAutomationSummary = () => {
     return dateStr.replace(/ GMT.*$/, '') + ' IST';
   };
 
-  // Helper function to format date only (without time) for Response Data
-  const formatDateOnly = (dateStr: string) => {
-    // Parse the date string directly without timezone conversion
-    // Expected format: "Mon, 16 Feb 2026 15:35:52 GMT" or similar
-    const parts = dateStr.match(/^(\w+),\s+(\d+)\s+(\w+)\s+(\d+)\s+(\d+):(\d+):(\d+)/);
-    
-    if (parts) {
-      const [, dayName, day, month, year] = parts;
-      return `${month} ${day}, ${year}`;
-    }
-    
-    // Fallback: return only the date part
-    return dateStr.replace(/\s+\d+:\d+:\d+.*$/, '');
-  };
-
-  // Convert API records to table rows for Responds tab
-  const respondsTableData = respondsData.map(record => [
+  // Convert API records to table rows for Responds tab with filtering
+  const filteredRespondsData = respondsData.filter(record => {
+    if (respondsFilter === 'All') return true;
+    if (respondsFilter === 'Positive Responds') return record.responds === 'Positive Responds';
+    if (respondsFilter === 'Not Responds Yet') return record.responds === 'Not Responds Yet';
+    if (respondsFilter === 'Unsubscribe') return record.responds === 'Unsubscribe';
+    return true;
+  });
+  
+  const respondsTableData = filteredRespondsData.map(record => [
     record.sender_email,
     record.receiver_email,
     record.responds,
     record.subject || 'N/A',
     record.body || 'N/A',
-    formatDateOnly(record.updated_at),
+    formatDateTime(record.updated_at),
   ]);
 
   // Convert API records to table rows for Sent Emails tab
@@ -255,7 +173,7 @@ const EmailAutomationSummary = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-start bg-white px-4 py-8">
       <div className="w-full max-w-7xl flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold text-primary tracking-tight">Email Sending Summary</h1>
+        <h1 className="text-3xl font-bold text-primary tracking-tight">Email Internal Warmup Summary</h1>
         <div className="flex items-center gap-3">
           <label className="text-sm font-semibold text-blue-900">Email Campaign:</label>
           <Select value={companyFilter} onValueChange={setCompanyFilter}>
@@ -324,7 +242,7 @@ const EmailAutomationSummary = () => {
               <CardContent className="pt-6">
                 <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                   <div className="flex flex-col md:flex-row items-center gap-4">
-                    <h3 className="text-base font-bold text-blue-900 whitespace-nowrap">Sent At Date Range Filter:</h3>
+                    <h3 className="text-base font-bold text-blue-900 whitespace-nowrap">Sent On Date Range Filter:</h3>
                     <div className="flex flex-col sm:flex-row items-center gap-4">
                       <div className="flex items-center gap-3 bg-white px-4 py-2.5 rounded-lg border border-blue-200 shadow-sm">
                         <label className="text-sm font-semibold text-blue-900">Start Date:</label>
@@ -461,61 +379,80 @@ const EmailAutomationSummary = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="flex-1" />
-                <div className="order-2 md:order-0">
-                  <Pagination>
-                    <PaginationContent>
-                      <PaginationItem>
-                        <PaginationPrevious
-                          onClick={() => setSentPage(p => Math.max(1, p - 1))}
-                          aria-disabled={sentPage === 1 || sentPageSize === "All"}
-                          tabIndex={sentPage === 1 || sentPageSize === "All" ? -1 : 0}
-                          style={sentPage === 1 || sentPageSize === "All" ? { pointerEvents: 'none', opacity: 0.5 } : {}}
-                        />
-                      </PaginationItem>
-                      {sentPageSize !== "All" && Array.from({ length: sentTotalPages }, (_, i) => i + 1).map(p => (
-                        <PaginationItem key={p}>
-                          <PaginationLink
-                            isActive={p === sentPage}
-                            onClick={() => setSentPage(p)}
-                            tabIndex={0}
-                          >
-                            {p}
-                          </PaginationLink>
-                        </PaginationItem>
-                      ))}
-                      {sentPageSize === "All" && (
+                
+                <Pagination className="order-0 md:order-1">
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious 
+                        onClick={() => setSentPage(p => Math.max(1, p - 1))}
+                        className={sentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      />
+                    </PaginationItem>
+                    
+                    {sentPage > 2 && (
+                      <>
                         <PaginationItem>
-                          <PaginationLink isActive={true}>
-                            All
+                          <PaginationLink onClick={() => setSentPage(1)} className="cursor-pointer">
+                            1
                           </PaginationLink>
                         </PaginationItem>
-                      )}
+                        {sentPage > 3 && <PaginationEllipsis />}
+                      </>
+                    )}
+                    
+                    {sentPage > 1 && (
                       <PaginationItem>
-                        <PaginationNext
-                          onClick={() => setSentPage(p => Math.min(sentTotalPages, p + 1))}
-                          aria-disabled={sentPage === sentTotalPages || sentPageSize === "All"}
-                          tabIndex={sentPage === sentTotalPages || sentPageSize === "All" ? -1 : 0}
-                          style={sentPage === sentTotalPages || sentPageSize === "All" ? { pointerEvents: 'none', opacity: 0.5 } : {}}
-                        />
+                        <PaginationLink onClick={() => setSentPage(sentPage - 1)} className="cursor-pointer">
+                          {sentPage - 1}
+                        </PaginationLink>
                       </PaginationItem>
-                    </PaginationContent>
-                  </Pagination>
-                </div>
+                    )}
+                    
+                    <PaginationItem>
+                      <PaginationLink isActive className="cursor-default">
+                        {sentPage}
+                      </PaginationLink>
+                    </PaginationItem>
+                    
+                    {sentPage < sentTotalPages && (
+                      <PaginationItem>
+                        <PaginationLink onClick={() => setSentPage(sentPage + 1)} className="cursor-pointer">
+                          {sentPage + 1}
+                        </PaginationLink>
+                      </PaginationItem>
+                    )}
+                    
+                    {sentPage < sentTotalPages - 1 && (
+                      <>
+                        {sentPage < sentTotalPages - 2 && <PaginationEllipsis />}
+                        <PaginationItem>
+                          <PaginationLink onClick={() => setSentPage(sentTotalPages)} className="cursor-pointer">
+                            {sentTotalPages}
+                          </PaginationLink>
+                        </PaginationItem>
+                      </>
+                    )}
+                    
+                    <PaginationItem>
+                      <PaginationNext 
+                        onClick={() => setSentPage(p => Math.min(sentTotalPages, p + 1))}
+                        className={sentPage === sentTotalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
               </div>
             )}
           </TabsContent>
 
           {/* Responds Emails Data Tab */}
           <TabsContent value="responds">
-            {/* Filters */}
             <Card className="mb-6 border-blue-200 bg-gradient-to-r from-blue-50 to-white shadow-md">
               <CardContent className="pt-6">
-                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                  {/* Date Range Filter */}
-                  <div className="flex flex-col md:flex-row items-center gap-4">
-                    <h3 className="text-base font-bold text-blue-900 whitespace-nowrap">Email Responds Filter:</h3>
-                    <div className="flex flex-col sm:flex-row items-center gap-4">
+                <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+                  <div className="flex flex-col md:flex-row items-start md:items-center gap-4 w-full">
+                    <h3 className="text-base font-bold text-blue-900 whitespace-nowrap">Response Date Range Filter:</h3>
+                    <div className="flex flex-col sm:flex-row items-center gap-4 flex-wrap">
                       <div className="flex items-center gap-3 bg-white px-4 py-2.5 rounded-lg border border-blue-200 shadow-sm">
                         <label className="text-sm font-semibold text-blue-900">Start Date:</label>
                         <Input
@@ -549,7 +486,7 @@ const EmailAutomationSummary = () => {
                     </div>
                   </div>
                   
-                  {/* Responds Type Filter */}
+                  {/* Response Type Filter */}
                   <div className="flex items-center gap-3 bg-white px-4 py-2.5 rounded-lg border border-blue-200 shadow-sm">
                     <label className="text-sm font-semibold text-blue-900">Response:</label>
                     <Select value={respondsFilter} onValueChange={(value) => {
@@ -557,7 +494,7 @@ const EmailAutomationSummary = () => {
                       setPage(1); // Reset to first page when filter changes
                     }}>
                       <SelectTrigger className="w-44 border-blue-300 focus:ring-blue-500 focus:border-blue-500 font-medium">
-                        <SelectValue placeholder="Select response" />
+                        <SelectValue />
                       </SelectTrigger>
                       <SelectContent position="popper" side="bottom" align="start" sideOffset={4}>
                         <SelectItem value="All">All</SelectItem>
@@ -570,8 +507,7 @@ const EmailAutomationSummary = () => {
                     </Select>
                   </div>
                   
-                  {/* Total Records */}
-                  <div className="flex items-center gap-2 bg-blue-600 px-4 py-2.5 rounded-lg shadow-sm">
+                  <div className="flex items-center gap-2 bg-blue-600 px-4 py-2.5 rounded-lg shadow-sm whitespace-nowrap">
                     <span className="text-sm font-bold text-white">Total Records:</span>
                     <span className="text-lg font-extrabold text-white">{totalRecords.toLocaleString()}</span>
                   </div>
@@ -586,7 +522,7 @@ const EmailAutomationSummary = () => {
               </div>
             )}
 
-            {/* Responds Table */}
+            {/* Responds Emails Table */}
             {!loading && respondsTableData.length > 0 && (
               <div className="rounded-2xl shadow-xl overflow-hidden border-2 border-blue-400 animate-fade-in">
                 <Table className="bg-white text-base">
@@ -714,47 +650,68 @@ const EmailAutomationSummary = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="flex-1" />
-                <div className="order-2 md:order-0">
-                  <Pagination>
-                    <PaginationContent>
-                      <PaginationItem>
-                        <PaginationPrevious
-                          onClick={() => setPage(p => Math.max(1, p - 1))}
-                          aria-disabled={page === 1 || pageSize === "All"}
-                          tabIndex={page === 1 || pageSize === "All" ? -1 : 0}
-                          style={page === 1 || pageSize === "All" ? { pointerEvents: 'none', opacity: 0.5 } : {}}
-                        />
-                      </PaginationItem>
-                      {pageSize !== "All" && Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
-                        <PaginationItem key={p}>
-                          <PaginationLink
-                            isActive={p === page}
-                            onClick={() => setPage(p)}
-                            tabIndex={0}
-                          >
-                            {p}
-                          </PaginationLink>
-                        </PaginationItem>
-                      ))}
-                      {pageSize === "All" && (
+                
+                <Pagination className="order-0 md:order-1">
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious 
+                        onClick={() => setPage(p => Math.max(1, p - 1))}
+                        className={page === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      />
+                    </PaginationItem>
+                    
+                    {page > 2 && (
+                      <>
                         <PaginationItem>
-                          <PaginationLink isActive={true}>
-                            All
+                          <PaginationLink onClick={() => setPage(1)} className="cursor-pointer">
+                            1
                           </PaginationLink>
                         </PaginationItem>
-                      )}
+                        {page > 3 && <PaginationEllipsis />}
+                      </>
+                    )}
+                    
+                    {page > 1 && (
                       <PaginationItem>
-                        <PaginationNext
-                          onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                          aria-disabled={page === totalPages || pageSize === "All"}
-                          tabIndex={page === totalPages || pageSize === "All" ? -1 : 0}
-                          style={page === totalPages || pageSize === "All" ? { pointerEvents: 'none', opacity: 0.5 } : {}}
-                        />
+                        <PaginationLink onClick={() => setPage(page - 1)} className="cursor-pointer">
+                          {page - 1}
+                        </PaginationLink>
                       </PaginationItem>
-                    </PaginationContent>
-                  </Pagination>
-                </div>
+                    )}
+                    
+                    <PaginationItem>
+                      <PaginationLink isActive className="cursor-default">
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                    
+                    {page < totalPages && (
+                      <PaginationItem>
+                        <PaginationLink onClick={() => setPage(page + 1)} className="cursor-pointer">
+                          {page + 1}
+                        </PaginationLink>
+                      </PaginationItem>
+                    )}
+                    
+                    {page < totalPages - 1 && (
+                      <>
+                        {page < totalPages - 2 && <PaginationEllipsis />}
+                        <PaginationItem>
+                          <PaginationLink onClick={() => setPage(totalPages)} className="cursor-pointer">
+                            {totalPages}
+                          </PaginationLink>
+                        </PaginationItem>
+                      </>
+                    )}
+                    
+                    <PaginationItem>
+                      <PaginationNext 
+                        onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                        className={page === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
               </div>
             )}
           </TabsContent>
@@ -762,6 +719,6 @@ const EmailAutomationSummary = () => {
       </div>
     </div>
   );
-}
+};
 
-export default EmailAutomationSummary;
+export default EmailInternalWarmup;
