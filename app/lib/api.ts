@@ -31,17 +31,20 @@ export interface UploadError {
  * Upload Excel file to the server
  * @param file - The Excel file to upload
  * @param emailType - The email type (GOLY or MPLY)
+ * @param sendProcess - The send process (Regular or Follow Up 1)
  * @param onProgress - Optional callback for upload progress
  * @returns Promise with upload response
  */
 export async function uploadFile(
   file: File,
   emailType: string,
+  sendProcess: string,
   onProgress?: (progress: number) => void
 ): Promise<UploadResponse> {
   const formData = new FormData();
   formData.append('file', file);
   formData.append('email_type', emailType);
+  formData.append('send_process', sendProcess);
 
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
@@ -120,11 +123,14 @@ export async function uploadFile(
 export interface SentEmailRecord {
   email_type: string;
   receiver_email: string;
+  responds: string | null;
+  send_process: string;
   sender_email: string;
   sent_at: string;
   status: string;
   status_message: string;
   subject: string | null;
+  updated_at: string;
 }
 
 export interface RespondsEmailRecord {
@@ -132,6 +138,7 @@ export interface RespondsEmailRecord {
   email_type: string;
   receiver_email: string;
   responds: string;
+  send_process?: string;
   sender_email: string;
   subject: string | null;
   updated_at: string;
@@ -151,14 +158,20 @@ export interface FiltersApplied {
   date_from: string;
   date_to: string;
   email_type: string;
-  responds_filter?: string;
+  responds_filter?: string | null;
+  send_process?: string | null;
+}
+
+export interface MonthlyStatsItem {
+  monthly_sent: number;
+  monthly_unsubscribed: number;
+  monthly_positive_responds: number;
+  monthly_not_responds: number;
 }
 
 export interface MonthlyStats {
-  monthly_not_responds: number;
-  monthly_positive_responds: number;
-  monthly_sent: number;
-  monthly_unsubscribed: number;
+  regular: MonthlyStatsItem;
+  follow_up_1: MonthlyStatsItem;
 }
 
 export interface EmailReportResponse {
@@ -169,7 +182,7 @@ export interface EmailReportResponse {
     records: (SentEmailRecord | RespondsEmailRecord)[];
     pagination: PaginationInfo;
     filters_applied: FiltersApplied;
-    monthly_stats: MonthlyStats;
+    monthly_stats?: MonthlyStats;
   };
 }
 
@@ -181,6 +194,7 @@ export interface EmailReportRequest {
   page: number;
   per_page: number;
   responds_filter?: string;
+  send_process?: string;
 }
 
 export interface ResponseOption {

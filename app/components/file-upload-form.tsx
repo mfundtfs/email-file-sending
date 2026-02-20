@@ -23,7 +23,10 @@ export function FileUploadForm() {
   const [uploadProgress, setUploadProgress] = React.useState<number | null>(null);
   const [error, setError] = React.useState("");
   const [fileError, setFileError] = React.useState("");
-  const [companyType, setCompanyType] = React.useState("GOLY");
+  const [companyType, setCompanyType] = React.useState("");
+  const [companyTypeError, setCompanyTypeError] = React.useState("");
+  const [emailType, setEmailType] = React.useState("");
+  const [emailTypeError, setEmailTypeError] = React.useState("");
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0] || null;
@@ -47,6 +50,20 @@ export function FileUploadForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setCompanyTypeError("");
+    setEmailTypeError("");
+    
+    if (!companyType) {
+      setCompanyTypeError("Please select an email campaign.");
+      setError("Please select an email campaign.");
+      return;
+    }
+    
+    if (!emailType) {
+      setEmailTypeError("Please select an email type.");
+      setError("Please select an email type.");
+      return;
+    }
     
     if (!file) {
       setFileError("Please upload an Excel file.");
@@ -55,11 +72,13 @@ export function FileUploadForm() {
     }
     
     setFileError("");
+    setCompanyTypeError("");
+    setEmailTypeError("");
     setLoading(true);
     setUploadProgress(0);
 
     try {
-      const response: UploadResponse = await uploadFile(file, companyType, (progress) => {
+      const response: UploadResponse = await uploadFile(file, companyType, emailType, (progress) => {
         setUploadProgress(progress);
       });
 
@@ -81,6 +100,8 @@ export function FileUploadForm() {
         
         // Reset form
         setFile(null);
+        setCompanyType("");
+        setEmailType("");
         setUploadProgress(null);
         
         // Reset file input
@@ -112,18 +133,42 @@ export function FileUploadForm() {
       >
         <h2 className="text-3xl font-bold text-center text-blue-700 tracking-tight">Upload Excel File</h2>
         
-        {/* Company Type Dropdown */}
+        {/* Email Campaign Dropdown */}
         <div className="flex flex-col gap-2">
-          <Label htmlFor="company-type" className="text-base text-blue-700 font-semibold">Company Type <span className="text-red-500">*</span></Label>
-          <Select value={companyType} onValueChange={setCompanyType}>
-            <SelectTrigger className="w-full border-2 border-slate-300 rounded-lg px-4 py-3 text-left hover:border-blue-400 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all bg-white shadow-sm">
-              <SelectValue />
+          <Label htmlFor="company-type" className="text-base text-blue-700 font-semibold">Email Campaign <span className="text-red-500">*</span></Label>
+          <Select value={companyType} onValueChange={(value) => {
+            setCompanyType(value);
+            setCompanyTypeError("");
+            setError("");
+          }}>
+            <SelectTrigger className={`w-full border-2 rounded-lg px-4 py-3 text-left hover:border-blue-400 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all bg-white shadow-sm ${companyTypeError ? 'border-red-400 bg-red-50/50' : 'border-slate-300'}`}>
+              <SelectValue placeholder="Select email campaign" />
             </SelectTrigger>
             <SelectContent position="popper" side="bottom" align="start" sideOffset={4}>
               <SelectItem value="GOLY">GOLY</SelectItem>
               <SelectItem value="MPLY">MPLY</SelectItem>
             </SelectContent>
           </Select>
+          {companyTypeError && <span className="text-xs text-red-500 font-medium">{companyTypeError}</span>}
+        </div>
+        
+        {/* Email Type Dropdown */}
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="email-type" className="text-base text-blue-700 font-semibold">Email Type <span className="text-red-500">*</span></Label>
+          <Select value={emailType} onValueChange={(value) => {
+            setEmailType(value);
+            setEmailTypeError("");
+            setError("");
+          }}>
+            <SelectTrigger className={`w-full border-2 rounded-lg px-4 py-3 text-left hover:border-blue-400 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all bg-white shadow-sm ${emailTypeError ? 'border-red-400 bg-red-50/50' : 'border-slate-300'}`}>
+              <SelectValue placeholder="Select email type" />
+            </SelectTrigger>
+            <SelectContent position="popper" side="bottom" align="start" sideOffset={4}>
+              <SelectItem value="Regular">Regular</SelectItem>
+              <SelectItem value="Follow up 1">Follow up 1</SelectItem>
+            </SelectContent>
+          </Select>
+          {emailTypeError && <span className="text-xs text-red-500 font-medium">{emailTypeError}</span>}
         </div>
         
         <div className="flex flex-col gap-2">

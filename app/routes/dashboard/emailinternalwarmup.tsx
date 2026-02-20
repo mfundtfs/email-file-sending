@@ -51,10 +51,18 @@ const EmailInternalWarmup = () => {
   const [sentData, setSentData] = useState<any[]>([]);
   const [respondsData, setRespondsData] = useState<any[]>([]);
   const [stats, setStats] = useState({
-    monthly_sent: 0,
-    monthly_unsubscribed: 0,
-    monthly_positive_responds: 0,
-    monthly_not_responds: 0,
+    regular: {
+      monthly_sent: 0,
+      monthly_unsubscribed: 0,
+      monthly_positive_responds: 0,
+      monthly_not_responds: 0,
+    },
+    follow_up_1: {
+      monthly_sent: 0,
+      monthly_unsubscribed: 0,
+      monthly_positive_responds: 0,
+      monthly_not_responds: 0,
+    },
   });
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'sent' | 'responds'>('sent');
@@ -75,6 +83,7 @@ const EmailInternalWarmup = () => {
   const [companyFilter, setCompanyFilter] = useState('MPLY');
   const [respondsFilter, setRespondsFilter] = useState<string>('All');
   const [responseOptions, setResponseOptions] = useState<ResponseOption[]>([]);
+  const [emailTypeFilter, setEmailTypeFilter] = useState<string>('Regular');
   
   // Date range filter for Responds Emails tab
   const [respondsStartDate, setRespondsStartDate] = useState(() => {
@@ -194,8 +203,16 @@ const EmailInternalWarmup = () => {
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-blue-900">Monthly Emails Sent</CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold text-blue-600">{stats.monthly_sent}</p>
+          <CardContent className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-600">Regular:</span>
+              <p className="text-2xl font-bold text-blue-600">{stats.regular.monthly_sent}</p>
+            </div>
+            <div className="border-t border-blue-200"></div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-600">Follow up 1:</span>
+              <p className="text-2xl font-bold text-blue-600">{stats.follow_up_1.monthly_sent}</p>
+            </div>
           </CardContent>
         </Card>
         
@@ -203,8 +220,16 @@ const EmailInternalWarmup = () => {
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-blue-900">Monthly Unsubscribed Emails</CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold text-red-600">{stats.monthly_unsubscribed}</p>
+          <CardContent className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-600">Regular:</span>
+              <p className="text-2xl font-bold text-red-600">{stats.regular.monthly_unsubscribed}</p>
+            </div>
+            <div className="border-t border-blue-200"></div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-600">Follow up 1:</span>
+              <p className="text-2xl font-bold text-red-600">{stats.follow_up_1.monthly_unsubscribed}</p>
+            </div>
           </CardContent>
         </Card>
         
@@ -212,8 +237,16 @@ const EmailInternalWarmup = () => {
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-blue-900">Monthly Positive Responses</CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold text-green-600">{stats.monthly_positive_responds}</p>
+          <CardContent className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-600">Regular:</span>
+              <p className="text-2xl font-bold text-green-600">{stats.regular.monthly_positive_responds}</p>
+            </div>
+            <div className="border-t border-blue-200"></div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-600">Follow up 1:</span>
+              <p className="text-2xl font-bold text-green-600">{stats.follow_up_1.monthly_positive_responds}</p>
+            </div>
           </CardContent>
         </Card>
         
@@ -221,8 +254,16 @@ const EmailInternalWarmup = () => {
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-blue-900">Monthly Not Responded</CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold text-orange-600">{stats.monthly_not_responds}</p>
+          <CardContent className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-600">Regular:</span>
+              <p className="text-2xl font-bold text-orange-600">{stats.regular.monthly_not_responds}</p>
+            </div>
+            <div className="border-t border-blue-200"></div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-600">Follow up 1:</span>
+              <p className="text-2xl font-bold text-orange-600">{stats.follow_up_1.monthly_not_responds}</p>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -273,6 +314,19 @@ const EmailInternalWarmup = () => {
                           }}
                           max={new Date().toISOString().slice(0, 10)}
                         />
+                      </div>
+                      {/* Email Type Filter */}
+                      <div className="flex items-center gap-3 bg-white px-4 py-2.5 rounded-lg border border-blue-200 shadow-sm">
+                        <label className="text-sm font-semibold text-blue-900 whitespace-nowrap">Email Type:</label>
+                        <Select value={emailTypeFilter} onValueChange={setEmailTypeFilter}>
+                          <SelectTrigger className="w-32 border-blue-300 focus:ring-blue-500">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Regular">Regular</SelectItem>
+                            <SelectItem value="Follow up 1">Follow up 1</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
                     </div>
                   </div>
