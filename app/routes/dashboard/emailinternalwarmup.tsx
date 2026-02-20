@@ -389,49 +389,35 @@ const EmailInternalWarmup = () => {
                       />
                     </PaginationItem>
                     
-                    {sentPage > 2 && (
-                      <>
-                        <PaginationItem>
-                          <PaginationLink onClick={() => setSentPage(1)} className="cursor-pointer">
-                            1
-                          </PaginationLink>
-                        </PaginationItem>
-                        {sentPage > 3 && <PaginationEllipsis />}
-                      </>
-                    )}
-                    
-                    {sentPage > 1 && (
-                      <PaginationItem>
-                        <PaginationLink onClick={() => setSentPage(sentPage - 1)} className="cursor-pointer">
-                          {sentPage - 1}
+                    {Array.from({ length: Math.min(6, sentTotalPages) }, (_, i) => i + 1).map((p) => (
+                      <PaginationItem key={p}>
+                        <PaginationLink 
+                          isActive={p === sentPage}
+                          onClick={() => setSentPage(p)} 
+                          className="cursor-pointer"
+                        >
+                          {p}
                         </PaginationLink>
+                      </PaginationItem>
+                    ))}
+                    
+                    {sentTotalPages > 6 && (
+                      <PaginationItem>
+                        <PaginationEllipsis />
                       </PaginationItem>
                     )}
                     
-                    <PaginationItem>
-                      <PaginationLink isActive className="cursor-default">
-                        {sentPage}
-                      </PaginationLink>
-                    </PaginationItem>
-                    
-                    {sentPage < sentTotalPages && (
-                      <PaginationItem>
-                        <PaginationLink onClick={() => setSentPage(sentPage + 1)} className="cursor-pointer">
-                          {sentPage + 1}
+                    {sentTotalPages > 6 && Array.from({ length: 2 }, (_, i) => sentTotalPages - 1 + i).map(p => (
+                      <PaginationItem key={p}>
+                        <PaginationLink
+                          isActive={p === sentPage}
+                          onClick={() => setSentPage(p)}
+                          className="cursor-pointer"
+                        >
+                          {p}
                         </PaginationLink>
                       </PaginationItem>
-                    )}
-                    
-                    {sentPage < sentTotalPages - 1 && (
-                      <>
-                        {sentPage < sentTotalPages - 2 && <PaginationEllipsis />}
-                        <PaginationItem>
-                          <PaginationLink onClick={() => setSentPage(sentTotalPages)} className="cursor-pointer">
-                            {sentTotalPages}
-                          </PaginationLink>
-                        </PaginationItem>
-                      </>
-                    )}
+                    ))}
                     
                     <PaginationItem>
                       <PaginationNext 
@@ -660,49 +646,35 @@ const EmailInternalWarmup = () => {
                       />
                     </PaginationItem>
                     
-                    {page > 2 && (
-                      <>
-                        <PaginationItem>
-                          <PaginationLink onClick={() => setPage(1)} className="cursor-pointer">
-                            1
-                          </PaginationLink>
-                        </PaginationItem>
-                        {page > 3 && <PaginationEllipsis />}
-                      </>
-                    )}
-                    
-                    {page > 1 && (
-                      <PaginationItem>
-                        <PaginationLink onClick={() => setPage(page - 1)} className="cursor-pointer">
-                          {page - 1}
+                    {Array.from({ length: Math.min(6, totalPages) }, (_, i) => i + 1).map((p) => (
+                      <PaginationItem key={p}>
+                        <PaginationLink 
+                          isActive={p === page}
+                          onClick={() => setPage(p)} 
+                          className="cursor-pointer"
+                        >
+                          {p}
                         </PaginationLink>
+                      </PaginationItem>
+                    ))}
+                    
+                    {totalPages > 6 && (
+                      <PaginationItem>
+                        <PaginationEllipsis />
                       </PaginationItem>
                     )}
                     
-                    <PaginationItem>
-                      <PaginationLink isActive className="cursor-default">
-                        {page}
-                      </PaginationLink>
-                    </PaginationItem>
-                    
-                    {page < totalPages && (
-                      <PaginationItem>
-                        <PaginationLink onClick={() => setPage(page + 1)} className="cursor-pointer">
-                          {page + 1}
+                    {totalPages > 6 && Array.from({ length: 2 }, (_, i) => totalPages - 1 + i).map(p => (
+                      <PaginationItem key={p}>
+                        <PaginationLink
+                          isActive={p === page}
+                          onClick={() => setPage(p)}
+                          className="cursor-pointer"
+                        >
+                          {p}
                         </PaginationLink>
                       </PaginationItem>
-                    )}
-                    
-                    {page < totalPages - 1 && (
-                      <>
-                        {page < totalPages - 2 && <PaginationEllipsis />}
-                        <PaginationItem>
-                          <PaginationLink onClick={() => setPage(totalPages)} className="cursor-pointer">
-                            {totalPages}
-                          </PaginationLink>
-                        </PaginationItem>
-                      </>
-                    )}
+                    ))}
                     
                     <PaginationItem>
                       <PaginationNext 

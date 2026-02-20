@@ -473,7 +473,23 @@ const EmailAutomationSummary = () => {
                           style={sentPage === 1 || sentPageSize === "All" ? { pointerEvents: 'none', opacity: 0.5 } : {}}
                         />
                       </PaginationItem>
-                      {sentPageSize !== "All" && Array.from({ length: sentTotalPages }, (_, i) => i + 1).map(p => (
+                      {sentPageSize !== "All" && Array.from({ length: Math.min(6, sentTotalPages) }, (_, i) => i + 1).map(p => (
+                        <PaginationItem key={p}>
+                          <PaginationLink
+                            isActive={p === sentPage}
+                            onClick={() => setSentPage(p)}
+                            tabIndex={0}
+                          >
+                            {p}
+                          </PaginationLink>
+                        </PaginationItem>
+                      ))}
+                      {sentPageSize !== "All" && sentTotalPages > 6 && (
+                        <PaginationItem>
+                          <PaginationEllipsis />
+                        </PaginationItem>
+                      )}
+                      {sentPageSize !== "All" && sentTotalPages > 6 && Array.from({ length: 2 }, (_, i) => sentTotalPages - 1 + i).map(p => (
                         <PaginationItem key={p}>
                           <PaginationLink
                             isActive={p === sentPage}
@@ -726,7 +742,23 @@ const EmailAutomationSummary = () => {
                           style={page === 1 || pageSize === "All" ? { pointerEvents: 'none', opacity: 0.5 } : {}}
                         />
                       </PaginationItem>
-                      {pageSize !== "All" && Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                      {pageSize !== "All" && Array.from({ length: Math.min(6, totalPages) }, (_, i) => i + 1).map(p => (
+                        <PaginationItem key={p}>
+                          <PaginationLink
+                            isActive={p === page}
+                            onClick={() => setPage(p)}
+                            tabIndex={0}
+                          >
+                            {p}
+                          </PaginationLink>
+                        </PaginationItem>
+                      ))}
+                      {pageSize !== "All" && totalPages > 6 && (
+                        <PaginationItem>
+                          <PaginationEllipsis />
+                        </PaginationItem>
+                      )}
+                      {pageSize !== "All" && totalPages > 6 && Array.from({ length: 2 }, (_, i) => totalPages - 1 + i).map(p => (
                         <PaginationItem key={p}>
                           <PaginationLink
                             isActive={p === page}
