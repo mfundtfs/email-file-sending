@@ -79,7 +79,7 @@ const EmailAutomationSummary = () => {
   const [sentTotalPages, setSentTotalPages] = useState(1);
   const [sentTotalRecords, setSentTotalRecords] = useState(0);
   
-  const [hoveredBody, setHoveredBody] = useState<{ content: string; x: number; y: number } | null>(null);
+  const [hoveredBody, setHoveredBody] = useState<{ content: string; x: number; y: number; isLastFive: boolean } | null>(null);
   const [companyFilter, setCompanyFilter] = useState('MPLY');
   const [respondsFilter, setRespondsFilter] = useState<string>('');
   const [responseOptions, setResponseOptions] = useState<ResponseOption[]>([]);
@@ -714,7 +714,7 @@ const EmailAutomationSummary = () => {
                                     aria-label="View full response body"
                                     onMouseEnter={e => {
                                       const rect = (e.target as HTMLElement).getBoundingClientRect();
-                                      setHoveredBody({ content: cell, x: rect.left + rect.width / 2, y: rect.bottom });
+                                      setHoveredBody({ content: cell, x: rect.left + rect.width / 2, y: rect.top, isLastFive: true });
                                     }}
                                     onMouseLeave={() => setHoveredBody(null)}
                                   >
@@ -722,7 +722,11 @@ const EmailAutomationSummary = () => {
                                     {hoveredBody && hoveredBody.content === cell && (
                                       <div
                                         className="fixed z-50 bg-white rounded-lg shadow-xl p-3 text-blue-900 text-xs max-w-md w-md border border-blue-300 wrap-break-word whitespace-pre-line"
-                                        style={{ left: hoveredBody.x - 420, top: hoveredBody.y + 8 }}
+                                        style={{ 
+                                          left: hoveredBody.x - 420, 
+                                          top: hoveredBody.y - 8,
+                                          transform: 'translateY(-100%)'
+                                        }}
                                       >
                                         {cell}
                                       </div>
