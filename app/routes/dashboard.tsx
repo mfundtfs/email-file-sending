@@ -721,12 +721,15 @@ const EmailAutomationSummary = () => {
                                     <FaRegEye size={18} />
                                     {hoveredBody && hoveredBody.content === cell && (
                                       <div
-                                        className="fixed z-50 bg-white rounded-lg shadow-xl p-3 text-blue-900 text-xs max-w-md w-md border border-blue-300 wrap-break-word whitespace-pre-line"
+                                        className="fixed z-50 bg-white rounded-lg shadow-xl p-3 text-blue-900 text-xs max-w-md w-md border border-blue-300 wrap-break-word whitespace-pre-line overflow-y-auto"
                                         style={{ 
                                           left: hoveredBody.x - 420, 
-                                          top: hoveredBody.y - 8,
-                                          transform: 'translateY(-100%)'
+                                          top: hoveredBody.y,
+                                          transform: 'translateY(-100%)',
+                                          maxHeight: '300px'
                                         }}
+                                        onMouseEnter={() => setHoveredBody({ content: cell, x: hoveredBody.x, y: hoveredBody.y, isLastFive: true })}
+                                        onMouseLeave={() => setHoveredBody(null)}
                                       >
                                         {cell}
                                       </div>
