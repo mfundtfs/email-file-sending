@@ -37,6 +37,7 @@ const respondsFields = [
   "Response Subject",
   "Response Body",
   "Response Date",
+  "Our Response",
 ];
 
 const sentFields = [
@@ -248,6 +249,7 @@ const EmailAutomationSummary = () => {
     record.subject || 'N/A',
     record.body || 'N/A',
     formatDateOnly(record.updated_at),
+    record.our_response || 'N/A',
   ]);
 
   // Convert API records to table rows for Sent Emails tab
@@ -694,8 +696,8 @@ const EmailAutomationSummary = () => {
                         }
                       >
                         {row.map((cell, j) => {
-                          // If this is the 'Response Body' column, truncate and show tooltip on hover
-                          if (respondsFields[j] === "Response Body") {
+                          // If this is the 'Response Body' or 'Our Response' column, truncate and show tooltip on hover
+                          if (respondsFields[j] === "Response Body" || respondsFields[j] === "Our Response") {
                             return (
                               <TableCell
                                 key={j}

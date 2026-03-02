@@ -142,6 +142,7 @@ export interface RespondsEmailRecord {
   sender_email: string;
   subject: string | null;
   updated_at: string;
+  our_response: string | null;
 }
 
 export type EmailRecord = SentEmailRecord | RespondsEmailRecord;
