@@ -131,6 +131,7 @@ export interface SentEmailRecord {
   status_message: string;
   subject: string | null;
   updated_at: string;
+  is_open: boolean;
 }
 
 export interface RespondsEmailRecord {
@@ -168,6 +169,7 @@ export interface MonthlyStatsItem {
   monthly_unsubscribed: number;
   monthly_positive_responds: number;
   monthly_not_responds: number;
+  monthly_opened: number;
 }
 
 export interface MonthlyStats {

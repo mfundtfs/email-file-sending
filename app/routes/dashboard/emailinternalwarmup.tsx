@@ -43,6 +43,7 @@ const sentFields = [
   "Sender",
   "Recipient",
   "Sent On",
+  "Open Status",
 ];
 
 const PAGE_SIZES = [10, 20, 50, 100, 500, "All"] as const;
@@ -56,12 +57,14 @@ const EmailInternalWarmup = () => {
       monthly_unsubscribed: 0,
       monthly_positive_responds: 0,
       monthly_not_responds: 0,
+      monthly_opened: 0,
     },
     follow_up_1: {
       monthly_sent: 0,
       monthly_unsubscribed: 0,
       monthly_positive_responds: 0,
       monthly_not_responds: 0,
+      monthly_opened: 0,
     },
   });
   const [loading, setLoading] = useState(false);
@@ -166,6 +169,7 @@ const EmailInternalWarmup = () => {
     record.sender_email,
     record.receiver_email,
     formatDateTime(record.sent_at),
+    record.is_open ? 'Yes' : 'No',
   ]);
 
   // Tab change handler
@@ -198,7 +202,7 @@ const EmailInternalWarmup = () => {
       </div>
       
       {/* Statistics Cards */}
-      <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
         <Card className="border-blue-300 hover:shadow-lg transition-shadow">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-blue-900">Monthly Emails Sent</CardTitle>
@@ -218,7 +222,7 @@ const EmailInternalWarmup = () => {
         
         <Card className="border-blue-300 hover:shadow-lg transition-shadow">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-blue-900">Monthly Unsubscribed Emails</CardTitle>
+            <CardTitle className="text-xs font-medium text-blue-900 whitespace-nowrap">Monthly Unsubscribed Emails</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex items-center justify-between">
@@ -263,6 +267,23 @@ const EmailInternalWarmup = () => {
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-gray-600">Follow up 1:</span>
               <p className="text-2xl font-bold text-orange-600">{stats.follow_up_1.monthly_not_responds}</p>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="border-blue-300 hover:shadow-lg transition-shadow">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium text-blue-900">Monthly Open Status</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-600">Regular:</span>
+              <p className="text-2xl font-bold text-purple-600">{stats.regular.monthly_opened}</p>
+            </div>
+            <div className="border-t border-blue-200"></div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-600">Follow up 1:</span>
+              <p className="text-2xl font-bold text-purple-600">{stats.follow_up_1.monthly_opened}</p>
             </div>
           </CardContent>
         </Card>
