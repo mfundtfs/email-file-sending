@@ -131,7 +131,7 @@ export interface SentEmailRecord {
   status_message: string;
   subject: string | null;
   updated_at: string;
-  is_open: boolean;
+  is_opened: boolean;
 }
 
 export interface RespondsEmailRecord {

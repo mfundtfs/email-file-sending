@@ -260,7 +260,7 @@ const EmailAutomationSummary = () => {
     record.sender_email,
     record.receiver_email,
     formatDateTime(record.sent_at),
-    record.is_open ? 'Yes' : 'No',
+    record.is_opened ? 'Yes' : 'No',
   ]);
 
   // Tab change handler
